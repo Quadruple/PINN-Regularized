@@ -2,12 +2,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-def get_title(data_index, array_index):
+def get_title(data_index, array_index, isPlotTitle):
     label = ""
     if data_index == 1:
         label += "L1 Regularized "
     else:
         label += "L2 Regularized "
+    if isPlotTitle:
+        label += "λ="
     if array_index == 0:
         label += "0.1"
     elif array_index == 1:
@@ -90,22 +92,22 @@ for data_index, data in enumerate(all_obtained_data):
             plt.close()
         else:
             for array_index, split in enumerate(np.array_split(data[data_key_to_plot], 3)):
-                plt.title(get_title(data_index, array_index))
+                plt.title(get_title(data_index, array_index, True))
                 plt.scatter(iteration_points, split)
-                plt.savefig(image_save_folder + key + "/" + get_title(data_index, array_index).replace(" ", "_").lower() + ".jpg")
+                plt.savefig(image_save_folder + key + "/" + get_title(data_index, array_index, False).replace(" ", "_").lower() + ".jpg")
                 plt.close()
 
 non_regularized_losses = all_obtained_data[0]
 non_regularized_row = [ 
-    non_regularized_losses["l1_avg"][-1],
-    non_regularized_losses["l2_avg"][-1],
-    non_regularized_losses["loss"][-1],
+    min(non_regularized_losses["l1_avg"]),
+    min(non_regularized_losses["l2_avg"]),
+    min(non_regularized_losses["loss"]),
 ]
 
 l1_regularization_results = all_obtained_data[1]
-l1_avg_losses_for_each_lambda = [x[-1] for x in np.array_split(l1_regularization_results["l1_avg"], 3)]
-l2_avg_losses_for_each_lambda = [x[-1] for x in np.array_split(l1_regularization_results["l2_avg"], 3)]
-l_inf_losses_for_each_lambda = [x[-1] for x in np.array_split(l1_regularization_results["loss"], 3)]
+l1_avg_losses_for_each_lambda = [min(x) for x in np.array_split(l1_regularization_results["l1_avg"], 3)]
+l2_avg_losses_for_each_lambda = [min(x) for x in np.array_split(l1_regularization_results["l2_avg"], 3)]
+l_inf_losses_for_each_lambda = [min(x) for x in np.array_split(l1_regularization_results["loss"], 3)]
 
 l1_regularized_table = pd.DataFrame(list(zip(
     l1_avg_losses_for_each_lambda,
@@ -118,9 +120,9 @@ l1_regularized_table.loc["N/A"] = non_regularized_row
 print(l1_regularized_table)
 
 l2_regularization_results = all_obtained_data[2]
-l1_avg_losses_for_each_lambda = [x[-1] for x in np.array_split(l2_regularization_results["l1_avg"], 3)]
-l2_avg_losses_for_each_lambda = [x[-1] for x in np.array_split(l2_regularization_results["l2_avg"], 3)]
-l_inf_losses_for_each_lambda = [x[-1] for x in np.array_split(l2_regularization_results["loss"], 3)]
+l1_avg_losses_for_each_lambda = [min(x) for x in np.array_split(l2_regularization_results["l1_avg"], 3)]
+l2_avg_losses_for_each_lambda = [min(x) for x in np.array_split(l2_regularization_results["l2_avg"], 3)]
+l_inf_losses_for_each_lambda = [min(x) for x in np.array_split(l2_regularization_results["loss"], 3)]
 
 l2_regularized_table = pd.DataFrame(list(zip(
     l1_avg_losses_for_each_lambda,
